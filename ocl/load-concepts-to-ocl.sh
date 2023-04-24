@@ -149,7 +149,7 @@ create_pih_source_in_ocl() {
             --arg autoid_mapping_mnemonic "sequential" \
             --arg autoid_concept_external_id "uuid" \
             --arg autoid_mapping_external_id "uuid" \
-            --arg autoid_concept_mnemonic_start_from "10000" \
+            --arg autoid_concept_mnemonic_start_from "20000" \
              '$ARGS.named')
 
   curl --silent \
@@ -252,6 +252,21 @@ create_collection_and_add_references_in_ocl() {
   add_references_to_collection_in_ocl "$@"
 }
 
+# TODO: This does not work, getting server error
+create_collection_version() {
+  COLLECTION_NAME=$1
+  COLLECTION_VERSION=$2
+  VERSION_DATA=$(jq -n --arg id "$COLLECTION_VERSION" --arg description "$COLLECTION_NAME $COLLECTION_VERSION" --arg released "true" '$ARGS.named')
+  echo "$VERSION_DATA"
+  curl --silent \
+      -H "Authorization: Token $OCL_API_TOKEN" \
+      -H "Accept: application/json" \
+      -H "Content-Type: application/json" \
+      --request POST \
+      --data "$VERSION_DATA" \
+      $OCL_API_URL/orgs/PIH/collections/$COLLECTION_NAME/versions/
+}
+
 #delete_existing_collections_from_ocl
 #delete_existing_sources_from_ocl
 #create_pih_source_in_ocl
@@ -300,3 +315,8 @@ create_collection_and_add_references_in_ocl() {
 #create_collection_and_add_references_in_ocl "Mexico_Concepts" "/orgs/PIH/sources/PIH/concepts/11723/"
 #create_collection_and_add_references_in_ocl "Liberia_Concepts" "/orgs/PIH/sources/PIH/concepts/12568/"
 #create_collection_and_add_references_in_ocl "Sierra_Leone_Concepts" "/orgs/PIH/sources/PIH/concepts/12557/"
+
+#create_collection_version "PIHEMR_Concepts" "1.0.0"
+#create_collection_version "Mexico_Concepts" "1.0.0"
+#create_collection_version "Liberia_Concepts" "1.0.0"
+#create_collection_version "Sierra_Leone_Concepts" "1.0.0"
