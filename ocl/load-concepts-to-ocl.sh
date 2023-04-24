@@ -102,7 +102,7 @@ wait_for_task_completion() {
     do
       STATUS=$(curl --silent -H "Authorization: Token $OCL_API_TOKEN" --request GET $OCL_API_URL/tasks/$TASK_ID/ | jq -r '.state')
       echo "Task $TASK_ID Status: $STATUS"
-      if [ "$STATUS" != "SUCCESS" ]; then
+      if [ "$STATUS" != "SUCCESS" ] && [ "$STATUS" != "FAILURE" ]; then
         sleep 10
       fi
     done
@@ -112,12 +112,13 @@ wait_for_task_completion() {
 
 delete_existing_collections_from_ocl() {
     COLLECTIONS_JSON=$(curl --silent -H "Authorization: Token $OCL_API_TOKEN" --request GET $OCL_API_URL/orgs/PIH/collections/)
-    COLLECTION_URLS=$(echo $COLLECTIONS_JSON | jq '.[] | .url')
+    COLLECTION_URLS=$(echo $COLLECTIONS_JSON | jq -r '.[] | .url')
     for COLLECTION in ${COLLECTION_URLS}
     do
-      echo "Deleting collection: $COLLECTION"
+      DELETE_RESOURCE=${OCL_API_URL}${COLLECTION}?async=true
+      echo "Deleting collection: $DELETE_RESOURCE"
       OUTPUT_FILE=${SDK_DIR}/delete_collection.json
-      curl --silent -H "Authorization: Token $OCL_API_TOKEN" --request DELETE ${OCL_API_URL}${$COLLECTION}?async=true > ${OUTPUT_FILE}
+      curl --silent -H "Authorization: Token $OCL_API_TOKEN" --request DELETE ${DELETE_RESOURCE} > ${OUTPUT_FILE}
       wait_for_task_completion ${OUTPUT_FILE}
       rm ${OUTPUT_FILE}
       echo "Collection deleted: $COLLECTION"
@@ -134,7 +135,7 @@ delete_existing_sources_from_ocl() {
 }
 
 create_pih_source_in_ocl() {
-  SOURCE=$(jq -n \
+  SOURCE_JSON=$(jq -n \
             --arg id "PIH" \
             --arg short_code "PIH" \
             --arg name "PIH" \
@@ -144,7 +145,9 @@ create_pih_source_in_ocl() {
             --arg custom_validation_schema "OpenMRS" \
             --arg default_locale "en" \
             --arg supported_locales "en,es,fr,ht" \
-            --arg autoid_concept_external_id "sequential"
+            --arg autoid_concept_mnemonic "sequential" \
+            --arg autoid_mapping_mnemonic "sequential" \
+            --arg autoid_concept_external_id "uuid" \
             --arg autoid_mapping_external_id "uuid" \
              '$ARGS.named')
 
@@ -153,9 +156,8 @@ create_pih_source_in_ocl() {
       -H "Accept: application/json" \
       -H "Content-Type: application/json" \
       --request POST \
-      --data '{"id":"PIH","short_code":"PIH","name":"PIH","full_name":"Partners In Health","description":"Partners In Health Dictionary","source_type":"dictionary","custom_validation_schema":"OpenMRS","default_locale":"en","supported_locales":"en,es,fr,ht"}' \
+      --data "${SOURCE_JSON}" \
       $OCL_API_URL/orgs/PIH/sources/
-  echo "PIH Source Created"
 }
 
 create_openboxes_source_in_ocl() {
@@ -166,7 +168,6 @@ create_openboxes_source_in_ocl() {
       --request POST \
       --data '{"id":"OpenBoxes","short_code":"OpenBoxes","name":"OpenBoxes","full_name":"OpenBoxes","description":"OpenBoxes Product Code for Drug Mappings","source_type":"reference","default_locale":"en","supported_locales":"en"}' \
       $OCL_API_URL/orgs/PIH/sources/
-  echo "OpenBoxes Source Created"
 }
 
 export_concepts_to_json() {
@@ -201,10 +202,8 @@ bulk_import_into_ocl() {
   wait_for_task_completion ${SDK_DIR}/bulk_import.json
 }
 
-# Param 1: Collection Name, Param 2: Concepts included
 create_collection_in_ocl() {
   COLLECTION_NAME=$1
-
   COLLECTION_DATA=$(jq -n \
                     --arg id "$COLLECTION_NAME" \
                     --arg short_code "$COLLECTION_NAME" \
@@ -216,14 +215,7 @@ create_collection_in_ocl() {
                     --arg supported_locales "en,es,fr,ht" \
                     --argjson extras '{"source": "/orgs/PIH/sources/PIH/"}' \
                      '$ARGS.named')
-
-   CONCEPT_ARRAY=$( jq --compact-output --null-input '$ARGS.positional' --args -- "${@:2}")
-   EXPRESSIONS=$( jq -n --argjson expressions "$CONCEPT_ARRAY" '$ARGS.named' )
-   CASCADE=$(jq -n --arg method "sourcetoconcepts" --arg cascade_levels "*" --arg map_types "Q-AND-A,CONCEPT-SET" --arg return_map_types "*" '$ARGS.named')
-   REFERENCE_DATA=$( jq -n --argjson data "$EXPRESSIONS" --argjson cascade "$CASCADE" '$ARGS.named' )
-
-  echo "Posting: $COLLECTION_DATA"
-
+  echo "$COLLECTION_DATA"
   curl --silent \
       -H "Authorization: Token $OCL_API_TOKEN" \
       -H "Accept: application/json" \
@@ -232,9 +224,15 @@ create_collection_in_ocl() {
       --data "$COLLECTION_DATA" \
       $OCL_API_URL/orgs/PIH/collections/
   echo "$COLLECTION_NAME Collection Created"
+}
 
-  echo "Posting: $REFERENCE_DATA"
-
+# Param 1: Collection Name, Param 2: Concepts included
+add_references_to_collection_in_ocl() {
+  COLLECTION_NAME=$1
+  CONCEPT_ARRAY=$( jq --compact-output --null-input '$ARGS.positional' --args -- "${@:2}")
+  EXPRESSIONS=$( jq -n --argjson expressions "$CONCEPT_ARRAY" '$ARGS.named' )
+  CASCADE=$(jq -n --arg method "sourcetoconcepts" --arg cascade_levels "*" --arg map_types "Q-AND-A,CONCEPT-SET" --arg return_map_types "*" '$ARGS.named')
+  REFERENCE_DATA=$( jq -n --argjson data "$EXPRESSIONS" --argjson cascade "$CASCADE" '$ARGS.named' )
   curl --silent \
       -H "Authorization: Token $OCL_API_TOKEN" \
       -H "Accept: application/json" \
@@ -242,71 +240,48 @@ create_collection_in_ocl() {
       --request PUT \
       --data "$REFERENCE_DATA" \
       $OCL_API_URL/orgs/PIH/collections/$COLLECTION_NAME/references/
-  echo "$COLLECTION_NAME References Created"
 }
 
-create_pihemr_collection() {
-  Allergies="/orgs/PIH/sources/PIH/concepts/12754/"
-  Clinical_Concepts="/orgs/PIH/sources/PIH/concepts/12571/"
-  COVID_19="/orgs/PIH/sources/PIH/concepts/12892/"
-  Dispensing_Concepts="/orgs/PIH/sources/PIH/concepts/12647/"
-  Disposition_Concepts="/orgs/PIH/sources/PIH/concepts/12656/"
-  Emergency_Triage="/orgs/PIH/sources/PIH/concepts/10669/"
-  Exam="/orgs/PIH/sources/PIH/concepts/10473/"
-  History="/orgs/PIH/sources/PIH/concepts/10562/"
-  HIV="/orgs/PIH/sources/PIH/concepts/10846/"
-  HUM_Radiology_Orderables_1="/orgs/PIH/sources/PIH/concepts/12643/"
-  HUM_Radiology_Orderables_2="/orgs/PIH/sources/PIH/concepts/9531/"
-  Immunization="/orgs/PIH/sources/PIH/concepts/13631/"
-  Labs="/orgs/PIH/sources/PIH/concepts/12503/"
-  Maternal_Child_Health="/orgs/PIH/sources/PIH/concepts/11662/"
-  Medication="/orgs/PIH/sources/PIH/concepts/12751/"
-  Mental_Health="/orgs/PIH/sources/PIH/concepts/12554/"
-  Metadata="/orgs/PIH/sources/PIH/concepts/12752/"
-  NCD="/orgs/PIH/sources/PIH/concepts/12481/"
-  Oncology="/orgs/PIH/sources/PIH/concepts/11676/"
-  Pathology="/orgs/PIH/sources/PIH/concepts/10773/"
-  Pediatric_Feeding="/orgs/PIH/sources/PIH/concepts/10563/"
-  Pediatric_Supplements="/orgs/PIH/sources/PIH/concepts/10573/"
-  PIH_Death="/orgs/PIH/sources/PIH/concepts/13604/"
-  Rehab="/orgs/PIH/sources/PIH/concepts/13657/"
-  Scheduling="/orgs/PIH/sources/PIH/concepts/9362/"
-  Socio_Economics="/orgs/PIH/sources/PIH/concepts/12616/"
-  Surgery_1="/orgs/PIH/sources/PIH/concepts/9779/"
-  Surgery_2="/orgs/PIH/sources/PIH/concepts/13678/"
-  Zika="/orgs/PIH/sources/PIH/concepts/11397/"
-
-  create_collection_in_ocl "PIHEMR_Concepts" \
-    $Allergies \
-    $Clinical_Concepts \
-    $COVID_19 \
-    $Dispensing_Concepts \
-    $Disposition_Concepts \
-    $Emergency_Triage \
-    $Exam \
-    $History \
-    $HIV \
-    $HUM_Radiology_Orderables_1 \
-    $HUM_Radiology_Orderables_2 \
-    $Immunization \
-    $Labs \
-    $Maternal_Child_Health \
-    $Medication \
-    $Mental_Health \
-    $Metadata \
-    $NCD \
-    $Oncology \
-    $Pathology \
-    $Pediatric_Feeding \
-    $Pediatric_Supplements \
-    $PIH_Death \
-    $Rehab \
-    $Scheduling \
-    $Socio_Economics \
-    $Surgery_1 \
-    $Surgery_2 \
-    $Zika
+# Param 1: Collection Name, Param 2: Concepts included
+create_collection_and_add_references_in_ocl() {
+  create_collection_in_ocl "$1"
+  add_references_to_collection_in_ocl "$@"
 }
+
+Allergies="/orgs/PIH/sources/PIH/concepts/12754/"
+Clinical_Concepts="/orgs/PIH/sources/PIH/concepts/12571/"
+COVID_19="/orgs/PIH/sources/PIH/concepts/12892/"
+Dispensing_Concepts="/orgs/PIH/sources/PIH/concepts/12647/"
+Disposition_Concepts="/orgs/PIH/sources/PIH/concepts/12656/"
+Emergency_Triage="/orgs/PIH/sources/PIH/concepts/10669/"
+Exam="/orgs/PIH/sources/PIH/concepts/10473/"
+History="/orgs/PIH/sources/PIH/concepts/10562/"
+HIV="/orgs/PIH/sources/PIH/concepts/10846/"
+HUM_Radiology_Orderables_1="/orgs/PIH/sources/PIH/concepts/12643/"
+HUM_Radiology_Orderables_2="/orgs/PIH/sources/PIH/concepts/9531/"
+Immunization="/orgs/PIH/sources/PIH/concepts/13631/"
+Labs="/orgs/PIH/sources/PIH/concepts/12503/"
+Maternal_Child_Health="/orgs/PIH/sources/PIH/concepts/11662/"
+Medication="/orgs/PIH/sources/PIH/concepts/12751/"
+Mental_Health="/orgs/PIH/sources/PIH/concepts/12554/"
+Metadata="/orgs/PIH/sources/PIH/concepts/12752/"
+NCD="/orgs/PIH/sources/PIH/concepts/12481/"
+Oncology="/orgs/PIH/sources/PIH/concepts/11676/"
+Pathology="/orgs/PIH/sources/PIH/concepts/10773/"
+Pediatric_Feeding="/orgs/PIH/sources/PIH/concepts/10563/"
+Pediatric_Supplements="/orgs/PIH/sources/PIH/concepts/10573/"
+PIH_Death="/orgs/PIH/sources/PIH/concepts/13604/"
+Rehab="/orgs/PIH/sources/PIH/concepts/13657/"
+Scheduling="/orgs/PIH/sources/PIH/concepts/9362/"
+Socio_Economics="/orgs/PIH/sources/PIH/concepts/12616/"
+Surgery_1="/orgs/PIH/sources/PIH/concepts/9779/"
+Surgery_2="/orgs/PIH/sources/PIH/concepts/13678/"
+Zika="/orgs/PIH/sources/PIH/concepts/11397/"
+
+#delete_existing_collections_from_ocl
+#delete_existing_sources_from_ocl
+#create_pih_source_in_ocl
+#create_openboxes_source_in_ocl
 
 #setup_mysql_docker_container
 #setup_mysql_db
@@ -314,47 +289,39 @@ create_pihemr_collection() {
 #install_config
 #run_sdk
 #export_openmrs_db
-#delete_existing_collections_from_ocl
-#delete_existing_sources_from_ocl
-#delete_existing_from_ocl
-#create_pih_source_in_ocl
-#create_openboxes_source_in_ocl
 #export_concepts_to_json
 #bulk_import_into_ocl
 
-#create_collection_in_ocl "Allergies" "/orgs/PIH/sources/PIH/concepts/12754/"
-#create_collection_in_ocl "Clinical_Concepts" "/orgs/PIH/sources/PIH/concepts/12571/"
-#create_collection_in_ocl "COVID-19" "/orgs/PIH/sources/PIH/concepts/12892/"
-#create_collection_in_ocl "Dispensing_Concepts" "/orgs/PIH/sources/PIH/concepts/12647/"
-#create_collection_in_ocl "Disposition_Concepts" "/orgs/PIH/sources/PIH/concepts/12656/"
-#create_collection_in_ocl "Emergency_Triage" "/orgs/PIH/sources/PIH/concepts/10669/"
-#create_collection_in_ocl "Exam" "/orgs/PIH/sources/PIH/concepts/10473/"
-#create_collection_in_ocl "History" "/orgs/PIH/sources/PIH/concepts/10562/"
-#create_collection_in_ocl "HIV" "/orgs/PIH/sources/PIH/concepts/10846/"
-#create_collection_in_ocl "HUM_Radiology_Orderables" "/orgs/PIH/sources/PIH/concepts/12643/" "/orgs/PIH/sources/PIH/concepts/9531/"
-#create_collection_in_ocl "Immunization" "/orgs/PIH/sources/PIH/concepts/13631/"
-#create_collection_in_ocl "Labs" "/orgs/PIH/sources/PIH/concepts/12503/"
-#create_collection_in_ocl "Maternal_Child_Health" "/orgs/PIH/sources/PIH/concepts/11662/"
-#create_collection_in_ocl "Medication" "/orgs/PIH/sources/PIH/concepts/12751/"
-#create_collection_in_ocl "Mental_Health" "/orgs/PIH/sources/PIH/concepts/12554/"
-#create_collection_in_ocl "Metadata" "/orgs/PIH/sources/PIH/concepts/12752/"
-#create_collection_in_ocl "NCD" "/orgs/PIH/sources/PIH/concepts/12481/"
-#create_collection_in_ocl "Oncology" "/orgs/PIH/sources/PIH/concepts/11676/"
-#create_collection_in_ocl "Pathology" "/orgs/PIH/sources/PIH/concepts/10773/"
-#create_collection_in_ocl "Pediatric_Feeding" "/orgs/PIH/sources/PIH/concepts/10563/"
-#create_collection_in_ocl "Pediatric_Supplements" "/orgs/PIH/sources/PIH/concepts/10573/"
-#create_collection_in_ocl "PIH_Death" "/orgs/PIH/sources/PIH/concepts/13604/"
-#create_collection_in_ocl "Rehab" "/orgs/PIH/sources/PIH/concepts/13657/"
-#create_collection_in_ocl "Scheduling" "/orgs/PIH/sources/PIH/concepts/9362/"
-#create_collection_in_ocl "Socio_Economics" "/orgs/PIH/sources/PIH/concepts/12616/"
-#create_collection_in_ocl "Surgery" "/orgs/PIH/sources/PIH/concepts/9779/" "/orgs/PIH/sources/PIH/concepts/13678/"
-#create_collection_in_ocl "Zika" "/orgs/PIH/sources/PIH/concepts/11397/"
+#create_collection_in_ocl "PIHEMR_Concepts"
 
-create_pihemr_collection
-#create_collection_in_ocl "Mexico_Concepts" "/orgs/PIH/sources/PIH/concepts/11723/"
-#create_collection_in_ocl "Liberia_Concepts" "/orgs/PIH/sources/PIH/concepts/12568/"
-#create_collection_in_ocl "Sierra_Leone_Concepts" "/orgs/PIH/sources/PIH/concepts/12557/"
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Allergies
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Clinical_Concepts
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $COVID_19
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Dispensing_Concepts
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Disposition_Concepts
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Emergency_Triage
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Exam
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $History
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $HIV
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $HUM_Radiology_Orderables_1 $HUM_Radiology_Orderables_2
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Immunization
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Labs
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Maternal_Child_Health
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Medication
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Mental_Health
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Metadata
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $NCD
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Oncology
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Pathology
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Pediatric_Feeding
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Pediatric_Supplements
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $PIH_Death
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Rehab
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Scheduling
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Socio_Economics
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Surgery_1 $Surgery_2
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" $Zika
 
-
-
-echo "Concept loading to OCL complete"
+#create_collection_and_add_references_in_ocl "Mexico_Concepts" "/orgs/PIH/sources/PIH/concepts/11723/"
+#create_collection_and_add_references_in_ocl "Liberia_Concepts" "/orgs/PIH/sources/PIH/concepts/12568/"
+#create_collection_and_add_references_in_ocl "Sierra_Leone_Concepts" "/orgs/PIH/sources/PIH/concepts/12557/"
