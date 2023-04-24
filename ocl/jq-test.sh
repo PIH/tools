@@ -21,4 +21,40 @@ get_mappings_for_concept() {
   echo $CONCEPT_JSON | jq '.'
 }
 
+
+create_pihemr_concept_set_in_ocl() {
+  CONCEPT_JSON=$(jq -n \
+            --arg id "10000" \
+            --arg concept_class "ConvSet" \
+            --arg datatype "N/A" \
+            --argjson names '[{"name": "PIHEMR Concept Set", "locale": "en", "locale_preferred": "true", "name_type": "FULLY_SPECIFIED"}]' \
+            --argjson extras '{"is_set": 1}' \
+             '$ARGS.named')
+
+  curl --silent \
+      -H "Authorization: Token $OCL_API_TOKEN" \
+      -H "Accept: application/json" \
+      -H "Content-Type: application/json" \
+      --request POST \
+      --data "${CONCEPT_JSON}" \
+      $OCL_API_URL/orgs/PIH/sources/PIH/concepts/
+}
+
+add_concept_to_pihemr_concept_set_in_ocl() {
+  CONCEPT_TO_ADD=${1}
+  MAPPING_JSON=$(jq -n \
+            --arg map_type "CONCEPT-SET" \
+            --arg from_concept_url "/orgs/PIH/sources/PIH/concepts/10000/" \
+            --arg to_concept_url "$CONCEPT_TO_ADD" \
+             '$ARGS.named')
+
+  curl --silent \
+      -H "Authorization: Token $OCL_API_TOKEN" \
+      -H "Accept: application/json" \
+      -H "Content-Type: application/json" \
+      --request POST \
+      --data "${MAPPING_JSON}" \
+      $OCL_API_URL/orgs/PIH/sources/PIH/mappings/
+}
+
 get_mappings_for_concept
