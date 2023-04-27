@@ -125,13 +125,20 @@ delete_existing_collections_from_ocl() {
     done
 }
 
+# TODO Remove step to delete the HL7 Medication Dispense Reason Source when it is no longer being created
 delete_existing_sources_from_ocl() {
-  echo "Deleting the PIH source"
-  curl --silent -H "Authorization: Token $OCL_API_TOKEN" --request DELETE $OCL_API_URL/orgs/PIH/sources/PIH/?async=true > ${SDK_DIR}/delete_pih_source.json
   echo "Deleting the OpenBoxes source"
   curl --silent -H "Authorization: Token $OCL_API_TOKEN" --request DELETE $OCL_API_URL/orgs/PIH/sources/OpenBoxes/?async=true > ${SDK_DIR}/delete_openboxes_source.json
-  wait_for_task_completion ${SDK_DIR}/delete_pih_source.json
   wait_for_task_completion ${SDK_DIR}/delete_openboxes_source.json
+
+  echo "Deleting the HL7 Medication Dispense Reason Source"
+  curl --silent -H "Authorization: Token $OCL_API_TOKEN" --request DELETE $OCL_API_URL/orgs/PIH/sources/HL7-MedicationDispenseStatusReason/?async=true > ${SDK_DIR}/delete_hl7_medication_dispense_reason_source.json
+  wait_for_task_completion ${SDK_DIR}/delete_hl7_medication_dispense_reason_source.json
+
+  echo "Deleting the PIH source"
+  curl --silent -H "Authorization: Token $OCL_API_TOKEN" --request DELETE $OCL_API_URL/orgs/PIH/sources/PIH/?async=true > ${SDK_DIR}/delete_pih_source.json
+  wait_for_task_completion ${SDK_DIR}/delete_pih_source.json
+
 }
 
 create_pih_source_in_ocl() {
@@ -167,10 +174,22 @@ create_openboxes_source_in_ocl() {
       -H "Accept: application/json" \
       -H "Content-Type: application/json" \
       --request POST \
-      --data '{"id":"OpenBoxes","short_code":"OpenBoxes","name":"OpenBoxes","full_name":"OpenBoxes","description":"OpenBoxes Product Code for Drug Mappings","source_type":"reference","default_locale":"en","supported_locales":"en"}' \
+      --data '{"id":"OpenBoxes","short_code":"OpenBoxes","name":"OpenBoxes","full_name":"OpenBoxes","description":"OpenBoxes Product Code for Drug Mappings","source_type":"External","default_locale":"en","supported_locales":"en"}' \
       $OCL_API_URL/orgs/PIH/sources/
 }
 
+# TODO: Remove this when this has been added to OCL in the HL7 organization
+create_hl7_medication_dispense_status_reason_source_in_ocl() {
+  curl --silent \
+      -H "Authorization: Token $OCL_API_TOKEN" \
+      -H "Accept: application/json" \
+      -H "Content-Type: application/json" \
+      --request POST \
+      --data '{"id":"HL7-MedicationDispenseStatusReason","short_code":"HL7-MedicationDispenseStatusReason","name":"HL7 Medication Dispense Status Reason","source_type":"External","default_locale":"en","supported_locales":"en"}' \
+      $OCL_API_URL/orgs/PIH/sources/
+}
+
+# TODO: Update to the HL7 organization and/or remove HL7-MedicationDispenseStatusReason when added to OCL
 export_concepts_to_json() {
   pushd ${CODE_DIR}
   rm -fR ocl_omrs
@@ -183,8 +202,9 @@ export_concepts_to_json() {
   # Add custom source mappings
   TO_REPLACE="# Added for AMPATH dictionary import"
   DISPENSE_STATUS=",{'owner_type': 'org', 'owner_id': 'HL7', 'omrs_id': 'HL7-MedicationDispenseStatus','ocl_id': 'HL7-MedicationDispenseStatus'}"
+  DISPENSE_STATUS_REASON=",{'owner_type': 'org', 'owner_id': 'PIH', 'omrs_id': 'HL7 Medication Dispense Status Reason','ocl_id': 'HL7-MedicationDispenseStatusReason'}"
   OPENBOXES=",{'omrs_id': 'OpenBoxes', 'ocl_id': 'OpenBoxes', 'owner_type': 'org', 'owner_id': 'PIH'}"
-  sed -i "s/${TO_REPLACE}/${DISPENSE_STATUS}${OPENBOXES}/g" omrs/management/commands/__init__.py
+  sed -i "s/${TO_REPLACE}/${DISPENSE_STATUS}${DISPENSE_STATUS_REASON}${OPENBOXES}/g" omrs/management/commands/__init__.py
 
   cp ${SDK_DIR}/${PROJECT_NAME}.sql local/
   export USE_GOLD_MAPPINGS=1
@@ -232,7 +252,7 @@ add_references_to_collection_in_ocl() {
   COLLECTION_NAME=$1
   CONCEPT_ARRAY=$( jq --compact-output --null-input '$ARGS.positional' --args -- "${@:2}")
   EXPRESSIONS=$( jq -n --argjson expressions "$CONCEPT_ARRAY" '$ARGS.named' )
-  CASCADE=$(jq -n --arg method "sourcetoconcepts" --arg cascade_levels "*" --arg map_types "Q-AND-A,CONCEPT-SET" --arg return_map_types "*" '$ARGS.named')
+  CASCADE=$(jq -n --arg method "sourcetoconcepts" --arg cascade_levels "*" --arg map_types "Q-AND-A,CONCEPT-SET" --arg return_map_types "*" --arg include_retired "true" '$ARGS.named')
   REFERENCE_DATA=$( jq -n --argjson data "$EXPRESSIONS" --argjson cascade "$CASCADE" '$ARGS.named' )
   OUTPUT_FILE=${SDK_DIR}/add_references_output.json
   curl --silent \
@@ -267,10 +287,47 @@ create_collection_version() {
       $OCL_API_URL/orgs/PIH/collections/$COLLECTION_NAME/versions/
 }
 
+# Not planned to be used, but for experimentation
+create_pihemr_concept_set_in_ocl() {
+  CONCEPT_JSON=$(jq -n \
+            --arg id "10001" \
+            --arg concept_class "ConvSet" \
+            --arg datatype "N/A" \
+            --argjson names '[{"name": "PIHEMR Concept Set", "locale": "en", "locale_preferred": "true", "name_type": "FULLY_SPECIFIED"}]' \
+            --argjson extras '{"is_set": 1}' \
+             '$ARGS.named')
+
+  curl --silent \
+      -H "Authorization: Token $OCL_API_TOKEN" \
+      -H "Accept: application/json" \
+      -H "Content-Type: application/json" \
+      --request POST \
+      --data "${CONCEPT_JSON}" \
+      $OCL_API_URL/orgs/PIH/sources/PIH/concepts/
+}
+
+add_concept_to_pihemr_concept_set_in_ocl() {
+  CONCEPT_TO_ADD=${1}
+  MAPPING_JSON=$(jq -n \
+            --arg map_type "CONCEPT-SET" \
+            --arg from_concept_url "/orgs/PIH/sources/PIH/concepts/10001/" \
+            --arg to_concept_url "$CONCEPT_TO_ADD" \
+             '$ARGS.named')
+
+  curl --silent \
+      -H "Authorization: Token $OCL_API_TOKEN" \
+      -H "Accept: application/json" \
+      -H "Content-Type: application/json" \
+      --request POST \
+      --data "${MAPPING_JSON}" \
+      $OCL_API_URL/orgs/PIH/sources/PIH/mappings/
+}
+
 #delete_existing_collections_from_ocl
 #delete_existing_sources_from_ocl
 #create_pih_source_in_ocl
 #create_openboxes_source_in_ocl
+#create_hl7_medication_dispense_status_reason_source_in_ocl
 
 #setup_mysql_docker_container
 #setup_mysql_db
@@ -320,3 +377,37 @@ create_collection_version() {
 #create_collection_version "Mexico_Concepts" "1.0.0"
 #create_collection_version "Liberia_Concepts" "1.0.0"
 #create_collection_version "Sierra_Leone_Concepts" "1.0.0"
+
+# The below is not used, it was an alternative to setting up the collection based on set members
+
+#create_pihemr_concept_set_in_ocl
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/12754/" #Allergies
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/12571/" #Clinical_Concepts
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/12892/" #COVID_19
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/12647/" #Dispensing_Concepts
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/12656/" #Disposition_Concepts
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/10669/" #Emergency_Triage
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/10473/" #Exam
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/10562/" #History
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/10846/" #HIV
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/12643/" #HUM_Radiology_Orderables_1
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/9531/" #HUM_Radiology_Orderables_2
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/13631/" #Immunization
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/12503/" #Labs
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/11662/" #Maternal_Child_Health
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/12751/" #Medication
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/12554/" #Mental_Health
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/12752/" #Metadata
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/12481/" #NCD
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/11676/" #Oncology
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/10773/" #Pathology
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/10563/" #Pediatric_Feeding
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/10573/" #Pediatric_Supplements
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/13604/" #PIH_Death
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/13657/" #Rehab
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/9362/" #Scheduling
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/12616/" #Socio_Economics
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/9779/" #Surgery_1
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/13678/" #Surgery_2
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/11397/" #Zika
+#create_collection_and_add_references_in_ocl "PIHEMR_Concepts_From_Set" "/orgs/PIH/sources/PIH/concepts/10001/"

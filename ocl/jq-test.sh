@@ -26,9 +26,19 @@ get_collection_version() {
     echo $JSON | jq '.'
 }
 
+get_collection_references() {
+    JSON=$(curl --silent -H "Authorization: Token $OCL_API_TOKEN" --request GET $OCL_API_URL/orgs/PIH/collections/PIHEMR_Concepts/HEAD/references/3284283/)
+    echo $JSON | jq '.'
+}
+
 get_collection_export() {
     JSON=$(curl --silent -H "Authorization: Token $OCL_API_TOKEN" --request GET $OCL_API_URL/orgs/PIH/collections/PIHEMR_Concepts/1.0.0/export/?includeConcepts=true&includeMappings=true&includeRetired=true&limit=0)
     echo $JSON | jq '.'
+}
+
+get_task() {
+  JSON=$(curl --silent -H "Authorization: Token $OCL_API_TOKEN" --request GET $OCL_API_URL/tasks/$1/)
+  echo $JSON | jq '.'
 }
 
 create_pihemr_concept_set_in_ocl() {
@@ -65,5 +75,3 @@ add_concept_to_pihemr_concept_set_in_ocl() {
       --data "${MAPPING_JSON}" \
       $OCL_API_URL/orgs/PIH/sources/PIH/mappings/
 }
-
-get_collection_version
