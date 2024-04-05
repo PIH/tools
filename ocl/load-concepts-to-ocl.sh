@@ -17,7 +17,8 @@ MYSQL_DOCKER_CONTAINER_NAME=mysql-oclexport
 MYSQL_DOCKER_CONTAINER_PORT=3309
 SDK_TOMCAT_PORT=8080
 SDK_DEBUG_PORT=5000
-OCL_API_URL=https://api.staging.openconceptlab.org
+# OCL_API_URL=https://api.staging.openconceptlab.org
+OCL_API_URL=https://api.openconceptlab.org
 
 SDK_DIR=~/openmrs/$PROJECT_NAME
 CODE_DIR=$SDK_DIR/code
@@ -139,6 +140,14 @@ delete_existing_sources_from_ocl() {
   curl --silent -H "Authorization: Token $OCL_API_TOKEN" --request DELETE $OCL_API_URL/orgs/PIH/sources/PIH/?async=true > ${SDK_DIR}/delete_pih_source.json
   wait_for_task_completion ${SDK_DIR}/delete_pih_source.json
 
+  echo "Deleting the PIH-Malawi source"
+  curl --silent -H "Authorization: Token $OCL_API_TOKEN" --request DELETE $OCL_API_URL/orgs/PIH/sources/PIH-Malawi/?async=true > ${SDK_DIR}/delete_pih_malawi_source.json
+  wait_for_task_completion ${SDK_DIR}/delete_pih_malawi_source.json
+
+  echo "Deleting the LiberiaMOH source"
+  curl --silent -H "Authorization: Token $OCL_API_TOKEN" --request DELETE $OCL_API_URL/orgs/PIH/sources/LiberiaMOH/?async=true > ${SDK_DIR}/delete_pih_liberia_moh.json
+  wait_for_task_completion ${SDK_DIR}/delete_pih_liberia_moh_source.json
+
 }
 
 create_pih_source_in_ocl() {
@@ -189,11 +198,33 @@ create_hl7_medication_dispense_status_reason_source_in_ocl() {
       $OCL_API_URL/orgs/PIH/sources/
 }
 
+create_pih_malawi_source_in_ocl() {
+  curl --silent \
+      -H "Authorization: Token $OCL_API_TOKEN" \
+      -H "Accept: application/json" \
+      -H "Content-Type: application/json" \
+      --request POST \
+      --data '{"id":"PIH-Malawi","short_code":"PIHMalawi","name":"PIH Malawi","description":"(2015 or older) Partners In Health Malawi concept dictionary","source_type":"External","default_locale":"en","supported_locales":"en"}' \
+      $OCL_API_URL/orgs/PIH/sources/
+}
+
+create_liberia_moh_source_in_ocl() {
+  curl --silent \
+      -H "Authorization: Token $OCL_API_TOKEN" \
+      -H "Accept: application/json" \
+      -H "Content-Type: application/json" \
+      --request POST \
+      --data '{"id":"LiberiaMOH","short_code":"LiberiaMOH","name":"Liberia MoH","full_name":"LiberiaMOH","description":"Liberia Ministry of Health disease codes","source_type":"External","default_locale":"en","supported_locales":"en"}' \
+      $OCL_API_URL/orgs/PIH/sources/
+}
+
 # TODO: Update to the HL7 organization and/or remove HL7-MedicationDispenseStatusReason when added to OCL
+# TODO: After merge of Mike's code change mseaton to OpenConceptLab repo
 export_concepts_to_json() {
   pushd ${CODE_DIR}
   rm -fR ocl_omrs
   git clone https://github.com/OpenConceptLab/ocl_omrs.git
+# git clone https://github.com/mseaton/ocl_omrs.git
   popd
   pushd ${CODE_DIR}/ocl_omrs
 
@@ -208,7 +239,8 @@ export_concepts_to_json() {
 
   cp ${SDK_DIR}/${PROJECT_NAME}.sql local/
   export USE_GOLD_MAPPINGS=1
-  ./sql-to-json.sh local/${PROJECT_NAME}.sql PIH PIH staging
+#  ./sql-to-json.sh local/${PROJECT_NAME}.sql PIH PIH staging
+  ./sql-to-json.sh local/${PROJECT_NAME}.sql PIH PIH production
   popd
 }
 
@@ -328,6 +360,8 @@ add_concept_to_pihemr_concept_set_in_ocl() {
 #create_pih_source_in_ocl
 #create_openboxes_source_in_ocl
 #create_hl7_medication_dispense_status_reason_source_in_ocl
+#create_liberia_moh_source_in_ocl
+#create_pih_malawi_source_in_ocl
 
 #setup_mysql_docker_container
 #setup_mysql_db
@@ -368,13 +402,13 @@ add_concept_to_pihemr_concept_set_in_ocl() {
 #add_references_to_collection_in_ocl "PIHEMR_Concepts" "/orgs/PIH/sources/PIH/concepts/9779/"  #Surgery_1
 #add_references_to_collection_in_ocl "PIHEMR_Concepts" "/orgs/PIH/sources/PIH/concepts/13678/" #Surgery_2
 #add_references_to_collection_in_ocl "PIHEMR_Concepts" "/orgs/PIH/sources/PIH/concepts/11397/" #Zika
-#add_references_to_collection_in_ocl "PIHEMR_Concepts" "/orgs/PIH/sources/PIH/concepts/1785/" #Ebola
+#add_references_to_collection_in_ocl "PIHEMR_Concepts" "/orgs/PIH/sources/PIH/concepts/1785/"  #Ebola
 #add_references_to_collection_in_ocl "PIHEMR_Concepts" "/orgs/PIH/sources/PIH/concepts/15002/" #Diagnoses
 
 #create_collection_and_add_references_in_ocl "Mexico_Concepts" "/orgs/PIH/sources/PIH/concepts/11723/"
 #create_collection_and_add_references_in_ocl "Liberia_Concepts" "/orgs/PIH/sources/PIH/concepts/12568/"
 #create_collection_and_add_references_in_ocl "Sierra_Leone_Concepts" "/orgs/PIH/sources/PIH/concepts/12557/"
-
+#
 #create_collection_version "PIHEMR_Concepts" "1.0.0"
 #create_collection_version "Mexico_Concepts" "1.0.0"
 #create_collection_version "Liberia_Concepts" "1.0.0"
@@ -393,7 +427,7 @@ add_concept_to_pihemr_concept_set_in_ocl() {
 #add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/10562/" #History
 #add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/10846/" #HIV
 #add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/12643/" #HUM_Radiology_Orderables_1
-#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/9531/" #HUM_Radiology_Orderables_2
+#add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/9531/"  #HUM_Radiology_Orderables_2
 #add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/13631/" #Immunization
 #add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/12503/" #Labs
 #add_concept_to_pihemr_concept_set_in_ocl "/orgs/PIH/sources/PIH/concepts/11662/" #Maternal_Child_Health
