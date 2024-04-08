@@ -17,8 +17,8 @@ MYSQL_DOCKER_CONTAINER_NAME=mysql-oclexport
 MYSQL_DOCKER_CONTAINER_PORT=3309
 SDK_TOMCAT_PORT=8080
 SDK_DEBUG_PORT=5000
-# OCL_API_URL=https://api.staging.openconceptlab.org
-OCL_API_URL=https://api.openconceptlab.org
+OCL_API_URL=https://api.staging.openconceptlab.org
+# OCL_API_URL=https://api.openconceptlab.org
 
 SDK_DIR=~/openmrs/$PROJECT_NAME
 CODE_DIR=$SDK_DIR/code
@@ -219,12 +219,10 @@ create_liberia_moh_source_in_ocl() {
 }
 
 # TODO: Update to the HL7 organization and/or remove HL7-MedicationDispenseStatusReason when added to OCL
-# TODO: After merge of Mike's code change mseaton to OpenConceptLab repo
 export_concepts_to_json() {
   pushd ${CODE_DIR}
   rm -fR ocl_omrs
   git clone https://github.com/OpenConceptLab/ocl_omrs.git
-# git clone https://github.com/mseaton/ocl_omrs.git
   popd
   pushd ${CODE_DIR}/ocl_omrs
 
@@ -239,8 +237,8 @@ export_concepts_to_json() {
 
   cp ${SDK_DIR}/${PROJECT_NAME}.sql local/
   export USE_GOLD_MAPPINGS=1
-#  ./sql-to-json.sh local/${PROJECT_NAME}.sql PIH PIH staging
-  ./sql-to-json.sh local/${PROJECT_NAME}.sql PIH PIH production
+  ./sql-to-json.sh local/${PROJECT_NAME}.sql PIH PIH staging
+# ./sql-to-json.sh local/${PROJECT_NAME}.sql PIH PIH production
   popd
 }
 
