@@ -1,0 +1,8 @@
+"resource_type","owner_id","source","collection","id","external_id","name","name_type","name_external_id","name[fr]","name_type[fr]","name_locale[fr]","name_locale_preferred[fr]","name_external_id[fr]","concept_class","datatype","map_from_concept_url[set]","map_to_concept_url[set]","map_type[set]","map_from_concept_url[PIH]","map_to_concept_url[PIH]","map_type[PIH]"
+"Concept","PIH","PIH",,867,,,,,,,,,,,,"/orgs/PIH/sources/PIH/concepts/20226/","/orgs/PIH/sources/PIH/concepts/867/","CONCEPT-SET",,,
+"Concept","PIH","PIH",,20334,,,,,,,,,,,,"/orgs/PIH/sources/PIH/concepts/20226/","/orgs/PIH/sources/PIH/concepts/20334/","CONCEPT-SET",,,
+"Concept","PIH","PIH",,20333,,,,,,,,,,,,"/orgs/PIH/sources/PIH/concepts/20226/","/orgs/PIH/sources/PIH/concepts/20333/","CONCEPT-SET",,,
+"Concept","PIH","PIH",,20332,,,,,,,,,,,,"/orgs/PIH/sources/PIH/concepts/20226/","/orgs/PIH/sources/PIH/concepts/20332/","CONCEPT-SET",,,
+"Concept","PIH","PIH",,20331,,,,,,,,,,,,"/orgs/PIH/sources/PIH/concepts/20226/","/orgs/PIH/sources/PIH/concepts/20331/","CONCEPT-SET",,,
+"Concept","PIH","PIH",,20335,,,,,,,,,,,,"/orgs/PIH/sources/PIH/concepts/20226/","/orgs/PIH/sources/PIH/concepts/20335/","CONCEPT-SET",,,
+"Concept","PIH","PIH",,10511,,,,,,,,,,,,"/orgs/PIH/sources/PIH/concepts/20226/","/orgs/PIH/sources/PIH/concepts/10511/","CONCEPT-SET",,,
