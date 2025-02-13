@@ -29,7 +29,7 @@ while getopts "$ARGUMENTS_OPTS" opt; do
      esac
 done
 
-if [ -z "${OWNER}" ] && [ -z "${REPO}" ]; then
+if [ -z "${OWNER}" ] && [ -z "${REPO}" ] && [ -z "${SHA}" ]; then
   ORIGIN_URL=$(git remote get-url origin)
   OWNER=$(echo ${ORIGIN_URL} | cut -d/ -f4- | cut -d/ -f1)
   REPO=$(basename -s .git "${ORIGIN_URL}")
