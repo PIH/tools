@@ -10,14 +10,16 @@ BAMBOO_PROJECT_KEY=""
 FREQUENCY=10  # Check status every X seconds, defaults to 10 seconds
 TIMEOUT=1800  # Return with timeout result if no conclusion in X seconds, defaults to 1800 (30 minutes)
 API_KEY_ENV_VAR_NAME="BAMBOO_API_KEY"
+OUTPUT_FILE="build-status.json"
 
-ARGUMENTS_OPTS="h:k:f:t:v:"
+ARGUMENTS_OPTS="h:k:f:t:o:v:"
 while getopts "$ARGUMENTS_OPTS" opt; do
      case $opt in
         h     ) BAMBOO_HOST=$OPTARG;;
         k     ) BAMBOO_PROJECT_KEY=$OPTARG;;
         f     ) FREQUENCY=$OPTARG;;
         t     ) TIMEOUT=$OPTARG;;
+        o     ) OUTPUT_FILE=$OPTARG;;
         v     ) API_KEY_ENV_VAR_NAME=$OPTARG;;
         \?    ) echoerr "Unknown option: -$OPTARG"; help; exit 1;;
         :     ) echoerr "Missing option argument for -$OPTARG"; help; exit 1;;
@@ -26,9 +28,8 @@ while getopts "$ARGUMENTS_OPTS" opt; do
 done
 
 BAMBOO_REST_URL="https://${BAMBOO_HOST}/rest/api/latest/result/${BAMBOO_PROJECT_KEY}?max-results=1&includeAllStates=true"
-STATUS_FILE="build-status.json"
 echo "Checking ${BAMBOO_REST_URL}"
-echo "Writing to ${STATUS_FILE}"
+echo "Writing to ${OUTPUT_FILE}"
 
 LIFECYCLE_STATE=""
 BUILD_STATE=""
@@ -37,16 +38,16 @@ CHECK_COMPLETE="FALSE"
 while [ "${CHECK_COMPLETE}" == "FALSE" ]
 do
   # Save the latest build result as a file
-  curl -Ls "${BAMBOO_REST_URL}" --header "Accept: application/json" --header "Authorization: Bearer $(printenv ${API_KEY_ENV_VAR_NAME})" | jq > ${STATUS_FILE} 2>/dev/null
+  curl -Ls "${BAMBOO_REST_URL}" --header "Accept: application/json" --header "Authorization: Bearer $(printenv ${API_KEY_ENV_VAR_NAME})" | jq > ${OUTPUT_FILE} 2>/dev/null
 
   echo "Checking build status: $(date '+%Y-%m-%d-%H-%M-%S')"
-  cat ${STATUS_FILE}
+  cat ${OUTPUT_FILE}
   echo ""
 
   # Get the status of the build
-  NUM_RESULTS=$(jq -r '.results.result | length' ${STATUS_FILE})
-  LIFECYCLE_STATE=$(jq -r '.results.result[0].lifeCycleState' ${STATUS_FILE})
-  BUILD_STATE=$(jq -r '.results.result[0].buildState' ${STATUS_FILE})
+  NUM_RESULTS=$(jq -r '.results.result | length' ${OUTPUT_FILE})
+  LIFECYCLE_STATE=$(jq -r '.results.result[0].lifeCycleState' ${OUTPUT_FILE})
+  BUILD_STATE=$(jq -r '.results.result[0].buildState' ${OUTPUT_FILE})
   if [ "${LIFECYCLE_STATE}" == "Finished" ] || ((NUM_RESULTS == 0)) || ((TIMEOUT <= 0)); then
     CHECK_COMPLETE="TRUE"
   fi
