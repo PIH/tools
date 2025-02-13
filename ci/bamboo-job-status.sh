@@ -8,15 +8,17 @@
 
 BAMBOO_HOST=""
 BAMBOO_PROJECT_KEY=""
+SHA=""
 FREQUENCY=10  # Check status every X seconds, defaults to 10 seconds
 TIMEOUT=1800  # Return with timeout result if no conclusion in X seconds, defaults to 1800 (30 minutes)
 API_KEY_ENV_VAR_NAME="BAMBOO_API_KEY"
 
-ARGUMENTS_OPTS="h:k:f:t:v:"
+ARGUMENTS_OPTS="h:k:s:f:t:v:"
 while getopts "$ARGUMENTS_OPTS" opt; do
      case $opt in
         h     ) BAMBOO_HOST=$OPTARG;;
         k     ) BAMBOO_PROJECT_KEY=$OPTARG;;
+        s     ) SHA=$OPTARG;;
         f     ) FREQUENCY=$OPTARG;;
         t     ) TIMEOUT=$OPTARG;;
         v     ) API_KEY_ENV_VAR_NAME=$OPTARG;;
@@ -26,17 +28,23 @@ while getopts "$ARGUMENTS_OPTS" opt; do
      esac
 done
 
-BAMBOO_REST_URL="https://${BAMBOO_HOST}/rest/api/latest/result/${BAMBOO_PROJECT_KEY}?max-results=1&includeAllStates=true"
-echo "Checking ${BAMBOO_REST_URL}"
-
 LIFECYCLE_STATE=""
 BUILD_STATE=""
 CHECK_COMPLETE="FALSE"
+API_KEY=$(printenv ${API_KEY_ENV_VAR_NAME})
 
 check_status() {
-  API_KEY=$(printenv ${API_KEY_ENV_VAR_NAME})
-  API_RESPONSE=$(curl -Ls "${BAMBOO_REST_URL}" --header "Accept: application/json" --header "Authorization: Bearer ${API_KEY}" 2>/dev/null)
-  echo "${API_RESPONSE}"
+  if [ -z "${SHA}" ]; then
+    BAMBOO_REST_URL="https://${BAMBOO_HOST}/rest/api/latest/result/${BAMBOO_PROJECT_KEY}?max-results=1&includeAllStates=true"
+    API_RESPONSE=$(curl -Ls "${BAMBOO_REST_URL}" --header "Accept: application/json" --header "Authorization: Bearer ${API_KEY}" 2>/dev/null)
+    PLAN_RESULT=$(echo "${API_RESPONSE}" |  jq '.results.result')
+    echo "${PLAN_RESULT}"
+  else
+    BAMBOO_REST_URL="https://${BAMBOO_HOST}/rest/api/latest/result/byChangeset/${SHA}"
+    API_RESPONSE=$(curl -Ls "${BAMBOO_REST_URL}" --header "Accept: application/json" --header "Authorization: Bearer ${API_KEY}" 2>/dev/null)
+    PLAN_RESULT=$(echo "${API_RESPONSE}" |  jq '.results.result | map(select(.plan.key == "'${BAMBOO_PROJECT_KEY}'"))')
+    echo "${PLAN_RESULT}"
+  fi
 }
 
 while [ "${CHECK_COMPLETE}" == "FALSE" ]
@@ -47,9 +55,9 @@ do
   echo "${CURRENT_STATUS}"
 
   # Get the status of the build
-  NUM_RESULTS=$(echo "${CURRENT_STATUS}" | jq -r '.results.result | length')
-  LIFECYCLE_STATE=$(echo "${CURRENT_STATUS}" | jq -r '.results.result[0].lifeCycleState')
-  BUILD_STATE=$(echo "${CURRENT_STATUS}" | jq -r '.results.result[0].buildState')
+  NUM_RESULTS=$(echo "${CURRENT_STATUS}" | jq -r '.[] | length')
+  LIFECYCLE_STATE=$(echo "${CURRENT_STATUS}" | jq -r '.[0].lifeCycleState')
+  BUILD_STATE=$(echo "${CURRENT_STATUS}" | jq -r '.[0].buildState')
   if [ "${LIFECYCLE_STATE}" == "Finished" ] || ((NUM_RESULTS == 0)) || ((TIMEOUT <= 0)); then
     CHECK_COMPLETE="TRUE"
   fi
