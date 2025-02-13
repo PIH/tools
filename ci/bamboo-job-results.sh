@@ -1,24 +1,25 @@
 #!/bin/bash
-# This script polls for the status of a Bamboo plan
-# This will return either a success or failure based on the success or failure of the workflow associated with the input arguments
-
+# This script polls for the results of a Bamboo plan and outputs those to the specified file
+#
 # Example:  Get the result of the latest Address Hierarchy Module build in OpenMRS CI
 # export OPENMRS_BAMBOO_API_KEY=XXXXXXXXXXXXXX
-# ./bamboo-job-status.sh -h ci.openmrs.org -k ADDRHIER-ADDRHIER -v OPENMRS_BAMBOO_API_KEY
+# ./bamboo-job-results.sh -h ci.openmrs.org -k ADDRHIER-ADDRHIER -v OPENMRS_BAMBOO_API_KEY -o /tmp/ADDRHIER.json
 
 BAMBOO_HOST=""
 BAMBOO_PROJECT_KEY=""
 FREQUENCY=10  # Check status every X seconds, defaults to 10 seconds
 TIMEOUT=1800  # Return with timeout result if no conclusion in X seconds, defaults to 1800 (30 minutes)
 API_KEY_ENV_VAR_NAME="BAMBOO_API_KEY"
+OUTPUT_FILE="build-status.json"
 
-ARGUMENTS_OPTS="h:k:f:t:v:"
+ARGUMENTS_OPTS="h:k:f:t:o:v:"
 while getopts "$ARGUMENTS_OPTS" opt; do
      case $opt in
         h     ) BAMBOO_HOST=$OPTARG;;
         k     ) BAMBOO_PROJECT_KEY=$OPTARG;;
         f     ) FREQUENCY=$OPTARG;;
         t     ) TIMEOUT=$OPTARG;;
+        o     ) OUTPUT_FILE=$OPTARG;;
         v     ) API_KEY_ENV_VAR_NAME=$OPTARG;;
         \?    ) echoerr "Unknown option: -$OPTARG"; help; exit 1;;
         :     ) echoerr "Missing option argument for -$OPTARG"; help; exit 1;;
@@ -28,28 +29,24 @@ done
 
 BAMBOO_REST_URL="https://${BAMBOO_HOST}/rest/api/latest/result/${BAMBOO_PROJECT_KEY}?max-results=1&includeAllStates=true"
 echo "Checking ${BAMBOO_REST_URL}"
+echo "Writing to ${OUTPUT_FILE}"
 
 LIFECYCLE_STATE=""
 BUILD_STATE=""
 CHECK_COMPLETE="FALSE"
 
-check_status() {
-  API_KEY=$(printenv ${API_KEY_ENV_VAR_NAME})
-  API_RESPONSE=$(curl -Ls "${BAMBOO_REST_URL}" --header "Accept: application/json" --header "Authorization: Bearer ${API_KEY}" 2>/dev/null)
-  echo "${API_RESPONSE}"
-}
-
 while [ "${CHECK_COMPLETE}" == "FALSE" ]
 do
-  CURRENT_DATE=$(date '+%Y-%m-%d-%H-%M-%S')
-  CURRENT_STATUS=$(check_status)
-  echo "${CURRENT_DATE}"
-  echo "${CURRENT_STATUS}"
+  # Save the latest build result as a file
+  curl -Ls "${BAMBOO_REST_URL}" --header "Accept: application/json" --header "Authorization: Bearer $(printenv ${API_KEY_ENV_VAR_NAME})" | jq > ${OUTPUT_FILE} 2>/dev/null
+  echo "Checking build status: $(date '+%Y-%m-%d-%H-%M-%S')"
+  cat ${OUTPUT_FILE}
+  echo ""
 
   # Get the status of the build
-  NUM_RESULTS=$(echo "${CURRENT_STATUS}" | jq -r '.results.result | length')
-  LIFECYCLE_STATE=$(echo "${CURRENT_STATUS}" | jq -r '.results.result[0].lifeCycleState')
-  BUILD_STATE=$(echo "${CURRENT_STATUS}" | jq -r '.results.result[0].buildState')
+  NUM_RESULTS=$(jq -r '.results.result | length' ${OUTPUT_FILE})
+  LIFECYCLE_STATE=$(jq -r '.results.result[0].lifeCycleState' ${OUTPUT_FILE})
+  BUILD_STATE=$(jq -r '.results.result[0].buildState' ${OUTPUT_FILE})
   if [ "${LIFECYCLE_STATE}" == "Finished" ] || ((NUM_RESULTS == 0)) || ((TIMEOUT <= 0)); then
     CHECK_COMPLETE="TRUE"
   fi

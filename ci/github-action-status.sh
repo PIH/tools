@@ -1,21 +1,24 @@
 #!/bin/bash
-# This script polls for the status of github action workflows for the `maven.yml` workflow
-# and will return either a success or failure based on the success or failure of the workflow associated with the
-# latest commit in the checked-out code
+# This script polls for the status of the latest github action workflows for the given workflow
+# By default, this will query for actions executed for the repository and latest commit from the execution directory
+# A specific repository can be queried by passing in the owner and repo (eg. -o PIH -r openmrs-module-pihcore)
+# A specific commit has can be queried by passing this in with the -s argument
+# The workflow should be specified as the name of the workflow file without the yml extension (eg. deploy)
+# This will return either a success or failure based on the success or failure of the workflow associated with the input arguments
+#
+# Example:  ./github-action-status.sh -o PIH -r openmrs-module-pihcore
 
 # Variables from input arguments
 GHA_BASE_URL="https://api.github.com/repos"
-ORIGIN_URL=$(git remote get-url origin)
-OWNER=$(echo ${ORIGIN_URL} | cut -d/ -f4- | cut -d/ -f1)
-REPO=$(basename -s .git "${ORIGIN_URL}")
-SHA=$(git rev-parse HEAD)
 FREQUENCY=10  # Check status every X seconds, defaults to 10 seconds
 TIMEOUT=1800  # Return with timeout result if no conclusion in X seconds, defaults to 1800 (30 minutes)
 WORKFLOW="deploy"
 
-ARGUMENTS_OPTS="w:s:f:t:"
+ARGUMENTS_OPTS="o:r:w:s:f:t:"
 while getopts "$ARGUMENTS_OPTS" opt; do
      case $opt in
+        o  ) OWNER=$OPTARG;;
+        r  ) REPO=$OPTARG;;
         w  ) WORKFLOW=$OPTARG;;
         s  ) SHA=$OPTARG;;
         f  ) FREQUENCY=$OPTARG;;
@@ -25,6 +28,18 @@ while getopts "$ARGUMENTS_OPTS" opt; do
         *  ) echoerr "Unimplemented option: -$OPTARG"; exit 1;;
      esac
 done
+
+if [ -z "${OWNER}" ] && [ -z "${REPO}" ]; then
+  ORIGIN_URL=$(git remote get-url origin)
+  OWNER=$(echo ${ORIGIN_URL} | cut -d/ -f4- | cut -d/ -f1)
+  REPO=$(basename -s .git "${ORIGIN_URL}")
+  SHA=$(git rev-parse HEAD)
+fi
+
+if [ -z "${OWNER}" ] || [ -z "${REPO}" ]; then
+  echo "Unable to determine github repository"
+  exit 1
+fi
 
 check_status() {
   GHA_WORKFLOW_RUNS_URL="${GHA_BASE_URL}/${OWNER}/${REPO}/actions/runs?head_sha=${SHA}"
