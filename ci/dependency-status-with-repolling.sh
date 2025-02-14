@@ -5,16 +5,20 @@ hasChecked=0
 hasChanged=0
 needsRecheck=0
 recheckDelay=0 # If set to a value > 0, this will result in multiple checks at this delay interval, until 2 consecutive checks match
+mavenProjectDir="$(pwd)"
 
-ARGUMENTS_OPTS="r:"
+ARGUMENTS_OPTS="r:d:"
 while getopts "$ARGUMENTS_OPTS" opt; do
      case $opt in
         r  ) recheckDelay=$OPTARG;;
+        d  ) mavenProjectDir=$OPTARG;;
         \? ) echoerr "Unknown option: -$OPTARG"; exit 1;;
         :  ) echoerr "Missing option argument for -$OPTARG"; exit 1;;
         *  ) echoerr "Unimplemented option: -$OPTARG"; exit 1;;
      esac
 done
+
+mavenArgs="-f ${mavenProjectDir}/pom.xml"
 
 declare -A local_dependency_filenames=()
 declare -A local_dependencies=()
@@ -22,12 +26,12 @@ declare -A remote_dependencies=()
 
 # Determine the modules for which the dependency report will be run and needs to be checked
 echo "List of modules to check for dependency changes:"
-moduleBuildDirs=$(mvn -q --also-make exec:exec -Dexec.executable="echo" -Dexec.args='${project.build.directory}')
+moduleBuildDirs=$(mvn ${mavenArgs} -q --also-make exec:exec -Dexec.executable="echo" -Dexec.args='${project.build.directory}')
 echo "$moduleBuildDirs"
 
 build_dependency_report() {
   echo "Building the latest version of the dependency report"
-  mvn --batch-mode --no-transfer-progress clean process-resources -U
+  mvn ${mavenArgs} --batch-mode --no-transfer-progress clean process-resources -U
 }
 
 # Build the initial dependency report, which also provides build directories for each module
@@ -49,8 +53,8 @@ for moduleBuildDir in ${moduleBuildDirs}; do
     remoteDependencyReportDir="${moduleBuildDir}/remote-dependency-report"
     remoteDependencyReportPath="${remoteDependencyReportDir}/${filename}"
     echo "Downloading remote dependency report for ${artifact}"
-    mvn --batch-mode --no-transfer-progress dependency:get -Dartifact=${artifact} -Dtransitive=false -U
-    mvn --batch-mode --no-transfer-progress dependency:copy -Dartifact=${artifact} -DoutputDirectory="${remoteDependencyReportDir}/"  -Dmdep.useBaseVersion=true
+    mvn ${mavenArgs} --batch-mode --no-transfer-progress dependency:get -Dartifact=${artifact} -Dtransitive=false -U
+    mvn ${mavenArgs} --batch-mode --no-transfer-progress dependency:copy -Dartifact=${artifact} -DoutputDirectory="${remoteDependencyReportDir}/"  -Dmdep.useBaseVersion=true
     if [ -f "${remoteDependencyReportPath}" ]; then
       remote_dependencies[${module}]=$(md5sum ${remoteDependencyReportPath} | awk '{ print $1 }')
       echo "Computed md5 for remote dependency: ${remote_dependencies[${module}]}"
