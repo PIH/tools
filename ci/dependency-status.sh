@@ -1,19 +1,16 @@
 #!/usr/bin/env bash
 set -e
 
-MAVEN_ARGS="-DskipTests"
-
-# Initialize hasChanged to 0
 hasChanged=0
 
 # Determine the modules for which the dependency report will be run and needs to be checked
 echo "List of modules to check for dependency changes:"
-moduleBuildDirs=$(mvn -q $MAVEN_ARGS --also-make exec:exec -Dexec.executable="echo" -Dexec.args='${project.build.directory}')
+moduleBuildDirs=$(mvn -q --also-make exec:exec -Dexec.executable="echo" -Dexec.args='${project.build.directory}')
 echo "$moduleBuildDirs"
 
 # Execute a local build to clean target directories and generate up-to-date dependency reports
 echo "Compile the latest version of the dependency report"
-mvn --batch-mode --no-transfer-progress clean package $MAVEN_ARGS
+mvn --batch-mode --no-transfer-progress clean process-resources -U
 
 # Iterate over each module to compare each dependency report
 for moduleBuildDir in ${moduleBuildDirs}; do
@@ -32,12 +29,12 @@ for moduleBuildDir in ${moduleBuildDirs}; do
   remoteDependencyReportPath="${remoteDependencyReportDir}/${filename}"
 
   if [ ! -f "${newDependencyReportPath}" ]; then
-      echo "No dependency report generated at '${newDependencyReportPath}'"
+    echo "No dependency report generated at '${newDependencyReportPath}'"
   else
     # Fetch the remote dependency report
     echo "Fetch remote dependency report ${artifact}..."
     set +e
-    mvn --batch-mode --no-transfer-progress org.apache.maven.plugins:maven-dependency-plugin:3.6.0:get -Dartifact=${artifact} -Dtransitive=false
+    mvn --batch-mode --no-transfer-progress org.apache.maven.plugins:maven-dependency-plugin:3.6.0:get -Dartifact=${artifact} -Dtransitive=false -U
     mvn --batch-mode --no-transfer-progress org.apache.maven.plugins:maven-dependency-plugin:3.6.0:copy -Dartifact=${artifact} -DoutputDirectory="${remoteDependencyReportDir}/"  -Dmdep.useBaseVersion=true
     set -e
 
@@ -66,7 +63,7 @@ done
 if [ ${hasChanged} -eq 0 ]; then
   echo "Check completed: No changes detected"
 else
-    echo "Check completed: Dependency changes detected"
+  echo "Check completed: Dependency changes detected"
 fi
 
 exit ${hasChanged}
