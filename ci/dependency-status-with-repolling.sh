@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -e
 
 echoWithDate() {
   CURRENT_DATE=$(date '+%Y-%m-%d-%H-%M-%S')
@@ -26,6 +25,7 @@ done
 mavenArgs="-f ${mavenProjectDir}/pom.xml"
 
 declare -A local_dependency_filenames=()
+declare -A remote_dependency_filenames=()
 declare -A local_dependencies=()
 declare -A remote_dependencies=()
 
@@ -57,6 +57,7 @@ for moduleBuildDir in ${moduleBuildDirs}; do
   if [ -f "${moduleBuildDir}/${filename}" ]; then
     remoteDependencyReportDir="${moduleBuildDir}/remote-dependency-report"
     remoteDependencyReportPath="${remoteDependencyReportDir}/${filename}"
+    remote_dependency_filenames[${module}]="${remoteDependencyReportPath}"
     echoWithDate "Downloading remote dependency report for ${artifact}"
     mvn ${mavenArgs} --batch-mode --no-transfer-progress dependency:get -Dartifact=${artifact} -Dtransitive=false -U
     mvn ${mavenArgs} --batch-mode --no-transfer-progress dependency:copy -Dartifact=${artifact} -DoutputDirectory="${remoteDependencyReportDir}/"  -Dmdep.useBaseVersion=true
@@ -80,6 +81,7 @@ do
 
     if [ -f "${local_dependency_file}" ]; then
 
+      remote_dependency_file=${remote_dependency_filenames[${module}]}
       remote_dependency_checksum=${remote_dependencies[${module}]}
       echoWithDate "Remote checksum: ${remote_dependency_checksum}"
 
@@ -87,6 +89,9 @@ do
       local_dependency_checksum=$(md5sum "${local_dependency_file}" | awk '{ print $1 }')
       echoWithDate "Local checksum: ${local_dependency_checksum}"
       if [ "${remote_dependency_checksum}" != "${local_dependency_checksum}" ]; then
+        if [ -f "${remote_dependency_file}" ]; then
+          diff ${remote_dependency_file} ${local_dependency_file}
+        fi
         hasChanged=1
       fi
 
@@ -123,4 +128,4 @@ else
   echoWithDate "Check completed: Dependency changes detected"
 fi
 
-export DEPENDENCIES_CHANGED="${hasChanged}"
+exit ${hasChanged}
