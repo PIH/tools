@@ -123,4 +123,4 @@ else
   echoWithDate "Check completed: Dependency changes detected"
 fi
 
-exit ${hasChanged}
+export DEPENDENCIES_CHANGED="${hasChanged}"
