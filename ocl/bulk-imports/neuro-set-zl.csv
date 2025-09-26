@@ -1,0 +1,3 @@
+resource_type,owner_id,source,collection,id,external_id,map_from_concept_url[set],map_to_concept_url[set],map_type[set]
+Concept,PIH,PIH,,7314,,/orgs/PIH/sources/PIH/concepts/20915/,/orgs/PIH/sources/PIH/concepts/7314/,CONCEPT-SET
+Concept,PIH,PIH,,9780,,/orgs/PIH/sources/PIH/concepts/20915/,/orgs/PIH/sources/PIH/concepts/9780/,CONCEPT-SET
