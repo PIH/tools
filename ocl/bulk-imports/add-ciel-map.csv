@@ -1,0 +1,2 @@
+resource_type,owner_id,source,collection,id,external_id,name,name_type,name_external_id,name[fr],name_type[fr],name_locale[fr],name_locale_preferred[fr],name_external_id[fr],concept_class,datatype,map_from_concept_url[set],map_to_concept_url[set],map_type[set],map_from_concept_url[CIEL],map_to_concept_url[CIEL],map_type[PIH]
+Concept,PIH,PIH,,20785,,,,,,,,,,,,,,,/orgs/PIH/sources/PIH/concepts/20785/,/orgs/CIEL/sources/CIEL/concepts/169645/,SAME-AS

@@ -1,0 +1,5 @@
+resource_type,owner_id,source,collection,id,external_id,name,name_type,name_external_id,name[en-GB],name_type[en-GB],name_locale[en-GB],name_locale_preferred[en-GB],name_external_id[en-GB],concept_class,datatype
+Concept,PIH,PIH,,7617,,Amenorrhoea,FULLY_SPECIFIED,,Amenorrhoea,FULLY_SPECIFIED,en-GB,True,,Diagnosis,None
+Concept,PIH,PIH,,9730,,Primary amenorrhoea,FULLY_SPECIFIED,,Primary amenorrhoea,FULLY_SPECIFIED,en-GB,True,,Diagnosis,None
+Concept,PIH,PIH,,13158,,Lactational amenorrhoea,FULLY_SPECIFIED,,Lactational amenorrhoea,FULLY_SPECIFIED,en-GB,True,,Diagnosis,None
+Concept,PIH,PIH,,9728,,Secondary physiologic amenorrhoea,FULLY_SPECIFIED,,Secondary physiologic menorrhoea,FULLY_SPECIFIED,en-GB,True,,Diagnosis,None
