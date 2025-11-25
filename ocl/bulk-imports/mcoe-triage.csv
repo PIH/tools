@@ -1,0 +1,8 @@
+resource_type,owner_id,source,collection,id,external_id,name,name_type,name_external_id,concept_class,datatype,map_from_concept_url[PIH],map_to_concept_url[PIH],map_type[PIH]
+Concept,PIH,PIH,,21085,,Uterine contractions with less than 34 weeks of pregnancy,FULLY_SPECIFIED,,Diagnosis,None,/orgs/PIH/sources/PIH/concepts/21085/,/orgs/PIH/sources/PIH/concepts/21085/,SAME-AS
+Concept,PIH,PIH,,21086,,Leaking fluid or spotting with less than 34 weeks of pregnancy,FULLY_SPECIFIED,,Diagnosis,None,/orgs/PIH/sources/PIH/concepts/21086/,/orgs/PIH/sources/PIH/concepts/21086/,SAME-AS
+Concept,PIH,PIH,,21087,,Active labour greater than 34 weeks gestation,FULLY_SPECIFIED,,Diagnosis,None,/orgs/PIH/sources/PIH/concepts/21087/,/orgs/PIH/sources/PIH/concepts/21087/,SAME-AS
+Concept,PIH,PIH,,21088,,Early labour between 34 and 37 weeks gestation,FULLY_SPECIFIED,,Diagnosis,None,/orgs/PIH/sources/PIH/concepts/21088/,/orgs/PIH/sources/PIH/concepts/21088/,SAME-AS
+Concept,PIH,PIH,,21089,,Regular contractions and HSV lesion greater than 34 weeks gestation,FULLY_SPECIFIED,,Diagnosis,None,/orgs/PIH/sources/PIH/concepts/21089/,/orgs/PIH/sources/PIH/concepts/21089/,SAME-AS
+Concept,PIH,PIH,,21090,,"Planned, elective, repeat cesarean with contractions greater than 34 weeks gestation",FULLY_SPECIFIED,,Diagnosis,None,/orgs/PIH/sources/PIH/concepts/21090/,/orgs/PIH/sources/PIH/concepts/21090/,SAME-AS
+Concept,PIH,PIH,,21091,,Multiple gestation and early contractions greater than 34 weeks gestation,FULLY_SPECIFIED,,Diagnosis,None,/orgs/PIH/sources/PIH/concepts/21091/,/orgs/PIH/sources/PIH/concepts/21091/,SAME-AS
