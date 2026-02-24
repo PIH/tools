@@ -242,6 +242,23 @@ export_concepts_to_json() {
   popd
 }
 
+export_apzu_concepts_to_json() {
+  pushd ${CODE_DIR}
+  rm -fR ocl_omrs
+  git clone https://github.com/OpenConceptLab/ocl_omrs.git
+  popd
+  pushd ${CODE_DIR}/ocl_omrs
+
+  # For OpenMRS 2.5, we do not name the allow_decimal as precise, remove this
+  sed -i "s/db_column='precise'//g" omrs/models.py
+
+  cp ${SDK_DIR}/${PROJECT_NAME}.sql local/
+  export USE_GOLD_MAPPINGS=1
+  ./sql-to-json.sh local/${PROJECT_NAME}.sql PIH APZU staging
+# ./sql-to-json.sh local/${PROJECT_NAME}.sql PIH APZU production
+  popd
+}
+
 bulk_import_into_ocl() {
   curl --silent \
       -H "Authorization: Token $OCL_API_TOKEN" \
@@ -368,6 +385,7 @@ add_concept_to_pihemr_concept_set_in_ocl() {
 #run_sdk
 #export_openmrs_db
 #export_concepts_to_json
+#export_apzu_concepts_to_json
 #bulk_import_into_ocl
 
 #create_collection_in_ocl "PIHEMR_Concepts"

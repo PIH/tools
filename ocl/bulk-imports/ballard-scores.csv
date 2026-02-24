@@ -1,0 +1,19 @@
+resource_type,owner_id,source,collection,id,external_id,name,name_type,name_external_id,concept_class,datatype,map_from_concept_url[PIH],map_to_concept_url[PIH],map_type[PIH]
+Concept,PIH,PIH,,21369,,Neuromuscular maturity scores,FULLY_SPECIFIED,,ConvSet,None,/org/PIH/sources/PIH/concepts/21369/,/org/PIH/sources/PIH/concepts/21369/,SAME-AS
+Concept,PIH,PIH,,21370,,Physical maturity scores,FULLY_SPECIFIED,,ConvSet,None,/org/PIH/sources/PIH/concepts/21370/,/org/PIH/sources/PIH/concepts/21370/,SAME-AS
+Concept,PIH,PIH,,21371,,Posture score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21371/,/org/PIH/sources/PIH/concepts/21371/,SAME-AS
+Concept,PIH,PIH,,21372,,Square window score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21372/,/org/PIH/sources/PIH/concepts/21372/,SAME-AS
+Concept,PIH,PIH,,21373,,Arm recoil score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21373/,/org/PIH/sources/PIH/concepts/21373/,SAME-AS
+Concept,PIH,PIH,,21374,,Popliteal angle score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21374/,/org/PIH/sources/PIH/concepts/21374/,SAME-AS
+Concept,PIH,PIH,,21375,,Scarf sign score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21375/,/org/PIH/sources/PIH/concepts/21375/,SAME-AS
+Concept,PIH,PIH,,21376,,Heel to ear score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21376/,/org/PIH/sources/PIH/concepts/21376/,SAME-AS
+Concept,PIH,PIH,,21377,,Skin score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21377/,/org/PIH/sources/PIH/concepts/21377/,SAME-AS
+Concept,PIH,PIH,,21378,,Lanugo score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21378/,/org/PIH/sources/PIH/concepts/21378/,SAME-AS
+Concept,PIH,PIH,,21379,,Plantar surface score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21379/,/org/PIH/sources/PIH/concepts/21379/,SAME-AS
+Concept,PIH,PIH,,21380,,Breast score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21380/,/org/PIH/sources/PIH/concepts/21380/,SAME-AS
+Concept,PIH,PIH,,21381,,Eye/Ear score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21381/,/org/PIH/sources/PIH/concepts/21381/,SAME-AS
+Concept,PIH,PIH,,21382,,Genitals (Male) score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21382/,/org/PIH/sources/PIH/concepts/21382/,SAME-AS
+Concept,PIH,PIH,,21383,,Genitals (Female) score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21383/,/org/PIH/sources/PIH/concepts/21383/,SAME-AS
+Concept,PIH,PIH,,21384,,Total neuromuscular maturity score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21384/,/org/PIH/sources/PIH/concepts/21384/,SAME-AS
+Concept,PIH,PIH,,21385,,Total physical maturity score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21385/,/org/PIH/sources/PIH/concepts/21385/,SAME-AS
+Concept,PIH,PIH,,21386,,Ballard score,FULLY_SPECIFIED,,Finding,Numeric,/org/PIH/sources/PIH/concepts/21386/,/org/PIH/sources/PIH/concepts/21386/,SAME-AS
