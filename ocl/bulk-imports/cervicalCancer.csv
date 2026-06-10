@@ -1,0 +1,9 @@
+resource_type,owner_id,source,collection,id,external_id,name,name_type,name_external_id,concept_class,datatype,map_from_concept_url[PIH],map_to_concept_url[PIH],map_type[PIH]
+Concept,PIH,PIH,,21600,,Postponed cryotherapy  ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21600/,/orgs/PIH/sources/PIH/concepts/21600/,SAME-AS
+Concept,PIH,PIH,,21601,,Related to treatment complication  ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21601/,/orgs/PIH/sources/PIH/concepts/21601/,SAME-AS
+Concept,PIH,PIH,,21602,,"Cryotherapy, Thermal ablation, LEEP  ",FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21602/,/orgs/PIH/sources/PIH/concepts/21602/,SAME-AS
+Concept,PIH,PIH,,21603,,One year follow-up  ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21603/,/orgs/PIH/sources/PIH/concepts/21603/,SAME-AS
+Concept,PIH,PIH,,21604,,One year follow-up after cryotherapy treatment at last visit  ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21604/,/orgs/PIH/sources/PIH/concepts/21604/,SAME-AS
+Concept,PIH,PIH,,21605,,Routine VIA screening  ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21605/,/orgs/PIH/sources/PIH/concepts/21605/,SAME-AS
+Concept,PIH,PIH,,21606,,Screening patient who had VIA-negative at last screening visit  ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21606/,/orgs/PIH/sources/PIH/concepts/21606/,SAME-AS
+Concept,PIH,PIH,,21607,,"Referral for Cryotherapy, Thermal ablation, LEEP",FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21607/,/orgs/PIH/sources/PIH/concepts/21607/,SAME-AS
