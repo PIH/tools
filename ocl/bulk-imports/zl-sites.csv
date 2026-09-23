@@ -1,0 +1,12 @@
+resource_type,owner_id,source,collection,id,external_id,name,name_type,name_external_id,concept_class,datatype,map_from_concept_url[PIH],map_to_concept_url[PIH],map_type[PIH]
+Concept,PIH,PIH,,21733,,Belladère,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21733/,/orgs/PIH/sources/PIH/concepts/21733/,SAME-AS
+Concept,PIH,PIH,,21734,,Boucan-Carré,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21734/,/orgs/PIH/sources/PIH/concepts/21734/,SAME-AS
+Concept,PIH,PIH,,21735,,Cange,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21735/,/orgs/PIH/sources/PIH/concepts/21735/,SAME-AS
+Concept,PIH,PIH,,21736,,Cerca la Source,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21736/,/orgs/PIH/sources/PIH/concepts/21736/,SAME-AS
+Concept,PIH,PIH,,21737,,Hinche,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21737/,/orgs/PIH/sources/PIH/concepts/21737/,SAME-AS
+Concept,PIH,PIH,,21738,,La Colline,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21738/,/orgs/PIH/sources/PIH/concepts/21738/,SAME-AS
+Concept,PIH,PIH,,21739,,Petite Rivière,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21739/,/orgs/PIH/sources/PIH/concepts/21739/,SAME-AS
+Concept,PIH,PIH,,21740,,Saint-Marc (HSN),FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21740/,/orgs/PIH/sources/PIH/concepts/21740/,SAME-AS
+Concept,PIH,PIH,,21741,,Saint-Marc (SSPE),FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21741/,/orgs/PIH/sources/PIH/concepts/21741/,SAME-AS
+Concept,PIH,PIH,,21742,,Thomonde,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21742/,/orgs/PIH/sources/PIH/concepts/21742/,SAME-AS
+Concept,PIH,PIH,,21743,,Verrettes,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21743/,/orgs/PIH/sources/PIH/concepts/21743/,SAME-AS

@@ -1,0 +1,12 @@
+resource_type,owner_id,source,collection,id,external_id,name,name_type,name_external_id,concept_class,datatype,map_from_concept_url[PIH],map_to_concept_url[PIH],map_type[PIH]
+Concept,PIH,PIH,,21685,,Rainbow School,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21685/,/orgs/PIH/sources/PIH/concepts/21685/,SAME-AS
+Concept,PIH,PIH,,21686,,Nuria Islamic Secondary School ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21686/,/orgs/PIH/sources/PIH/concepts/21686/,SAME-AS
+Concept,PIH,PIH,,21687,,Koidu Secondary School (KSS) ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21687/,/orgs/PIH/sources/PIH/concepts/21687/,SAME-AS
+Concept,PIH,PIH,,21688,,Koidu Girls Secondary School (KGSS) ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21688/,/orgs/PIH/sources/PIH/concepts/21688/,SAME-AS
+Concept,PIH,PIH,,21689,,"Islamic Secondary School, Koidu (ISSK) ",FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21689/,/orgs/PIH/sources/PIH/concepts/21689/,SAME-AS
+Concept,PIH,PIH,,21690,,Experimental School,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21690/,/orgs/PIH/sources/PIH/concepts/21690/,SAME-AS
+Concept,PIH,PIH,,21691,,Unique International School ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21691/,/orgs/PIH/sources/PIH/concepts/21691/,SAME-AS
+Concept,PIH,PIH,,21692,,Ansarul Islamic for Girls School,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21692/,/orgs/PIH/sources/PIH/concepts/21692/,SAME-AS
+Concept,PIH,PIH,,21693,,Universe School ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21693/,/orgs/PIH/sources/PIH/concepts/21693/,SAME-AS
+Concept,PIH,PIH,,21694,,Kono Model Academy (KMA) ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21694/,/orgs/PIH/sources/PIH/concepts/21694/,SAME-AS
+Concept,PIH,PIH,,21695,,Aladura School,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21695/,/orgs/PIH/sources/PIH/concepts/21695/,SAME-AS
