@@ -53,7 +53,7 @@ setup_sdk() {
       -DserverId=$PROJECT_NAME \
       -Ddistro=org.openmrs.distro:pihemr:2.0.0-SNAPSHOT \
       -DjavaHome=/usr/lib/jvm/java-8-openjdk-amd64 \
-      -Dpih.config=mirebalais,mirebalais-humci \
+      -Dpih.config=haiti,haiti-central,haiti-local-idgen \
       -DdbDriver=com.mysql.cj.jdbc.Driver \
       -DdbUri=jdbc\:mysql\://localhost\:${MYSQL_DOCKER_CONTAINER_PORT}/${PROJECT_NAME}?autoReconnect\=true\&useUnicode\=true\&characterEncoding\=UTF-8\&sessionVariables\=default_storage_engine%3DInnoDB \
       -DdbUser=root \
