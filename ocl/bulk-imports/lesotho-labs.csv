@@ -1,36 +1,24 @@
-resource_type,owner_id,source,collection,id,external_id,name,name_type,name_external_id,concept_class,datatype,map_from_concept_url[PIH],map_to_concept_url[PIH],map_type[PIH]
-Concept,PIH,PIH,,21733,, National TB Reference ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21733/,/orgs/PIH/sources/PIH/concepts/21733/,SAME-AS
-Concept,PIH,PIH,,21734,, PathCare Laboratories ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21734/,/orgs/PIH/sources/PIH/concepts/21734/,SAME-AS
-Concept,PIH,PIH,,21735,, NICD - NHLS ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21735/,/orgs/PIH/sources/PIH/concepts/21735/,SAME-AS
-Concept,PIH,PIH,,21736,, Maseru PIH ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21736/,/orgs/PIH/sources/PIH/concepts/21736/,SAME-AS
-Concept,PIH,PIH,,21737,, Ntsekhe Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21737/,/orgs/PIH/sources/PIH/concepts/21737/,SAME-AS
-Concept,PIH,PIH,,21738,, Maseru Regional Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21738/,/orgs/PIH/sources/PIH/concepts/21738/,SAME-AS
-Concept,PIH,PIH,,21739,, Makoanyane Military Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21739/,/orgs/PIH/sources/PIH/concepts/21739/,SAME-AS
-Concept,PIH,PIH,,21740,, Motebang ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21740/,/orgs/PIH/sources/PIH/concepts/21740/,SAME-AS
-Concept,PIH,PIH,,21741,, QMMH ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21741/,/orgs/PIH/sources/PIH/concepts/21741/,SAME-AS
-Concept,PIH,PIH,,21742,, Mamohau Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21742/,/orgs/PIH/sources/PIH/concepts/21742/,SAME-AS
-Concept,PIH,PIH,,21743,, Dr. Strong Thabo Makenete Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21743/,/orgs/PIH/sources/PIH/concepts/21743/,SAME-AS
-,,,,,, Butha Buthe Hospital ,,,,,,,
-,,,,,, Paray Hospital ,,,,,,,
-,,,,,, Tebellong Hospital ,,,,,,,
-,,,,,, Machabeng Hospital ,,,,,,,
-,,,,,, Quthing Hospital ,,,,,,,
-,,,,,, Mafeteng Hospital ,,,,,,,
-,,,,,, St. James Hospital ,,,,,,,
-,,,,,, Seboche Hospital ,,,,,,,
-,,,,,, Berea Hospital ,,,,,,,
-,,,,,, St. Josephs Hospital ,,,,,,,
-,,,,,, Scott Hospital ,,,,,,,
-,,,,,, Maluti Hospital ,,,,,,,
-,,,,,, Mokhotlong Hospital ,,,,,,,
-,,,,,,,,,,,,,
-,,,,,,,,,,,,,
-,,,,,,,,,,,,,
-,,,,,,,,,,,,,
-,,,,,,,,,,,,,
-,,,,,,,,,,,,,
-,,,,,,,,,,,,,
-,,,,,,,,,,,,,
-,,,,,,,,,,,,,
-,,,,,,,,,,,,,
-,,,,,,,,,,,,,
+resource_type,owner_id,source,collection,id,external_id,name,name_type,name_external_id,concept_class,datatype,map_from_concept_url[PIH],map_to_concept_url[PIH],map_type[PIH],map_from_concept_url[ANS],map_to_concept_url[ANS],map_type[ANS]
+Concept,PIH,PIH,,21811,, National TB Reference ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21811/,/orgs/PIH/sources/PIH/concepts/21811/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21811/,Q-AND-A
+Concept,PIH,PIH,,21812,, PathCare Laboratories ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21812/,/orgs/PIH/sources/PIH/concepts/21812/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21812/,Q-AND-A
+Concept,PIH,PIH,,21813,, NICD - NHLS ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21813/,/orgs/PIH/sources/PIH/concepts/21813/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21813/,Q-AND-A
+Concept,PIH,PIH,,21814,, Maseru PIH ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21814/,/orgs/PIH/sources/PIH/concepts/21814/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21814/,Q-AND-A
+Concept,PIH,PIH,,21815,, Ntsekhe Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21815/,/orgs/PIH/sources/PIH/concepts/21815/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21815/,Q-AND-A
+Concept,PIH,PIH,,21816,, Maseru Regional Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21816/,/orgs/PIH/sources/PIH/concepts/21816/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21816/,Q-AND-A
+Concept,PIH,PIH,,21817,, Makoanyane Military Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21817/,/orgs/PIH/sources/PIH/concepts/21817/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21817/,Q-AND-A
+Concept,PIH,PIH,,21818,, Motebang ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21818/,/orgs/PIH/sources/PIH/concepts/21818/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21818/,Q-AND-A
+Concept,PIH,PIH,,21819,, QMMH ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21819/,/orgs/PIH/sources/PIH/concepts/21819/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21819/,Q-AND-A
+Concept,PIH,PIH,,21820,, Mamohau Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21820/,/orgs/PIH/sources/PIH/concepts/21820/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21820/,Q-AND-A
+Concept,PIH,PIH,,21821,, Dr. Strong Thabo Makenete Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21821/,/orgs/PIH/sources/PIH/concepts/21821/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21821/,Q-AND-A
+Concept,PIH,PIH,,21822,, Paray Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21822/,/orgs/PIH/sources/PIH/concepts/21822/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21822/,Q-AND-A
+Concept,PIH,PIH,,21823,, Tebellong Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21823/,/orgs/PIH/sources/PIH/concepts/21823/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21823/,Q-AND-A
+Concept,PIH,PIH,,21824,, Machabeng Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21824/,/orgs/PIH/sources/PIH/concepts/21824/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21824/,Q-AND-A
+Concept,PIH,PIH,,21825,, Quthing Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21825/,/orgs/PIH/sources/PIH/concepts/21825/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21825/,Q-AND-A
+Concept,PIH,PIH,,21826,, Mafeteng Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21826/,/orgs/PIH/sources/PIH/concepts/21826/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21826/,Q-AND-A
+Concept,PIH,PIH,,21827,, St. James Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21827/,/orgs/PIH/sources/PIH/concepts/21827/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21827/,Q-AND-A
+Concept,PIH,PIH,,21828,, Seboche Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21828/,/orgs/PIH/sources/PIH/concepts/21828/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21828/,Q-AND-A
+Concept,PIH,PIH,,21829,, Berea Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21829/,/orgs/PIH/sources/PIH/concepts/21829/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21829/,Q-AND-A
+Concept,PIH,PIH,,21830,, St. Josephs Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21830/,/orgs/PIH/sources/PIH/concepts/21830/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21830/,Q-AND-A
+Concept,PIH,PIH,,21831,, Scott Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21831/,/orgs/PIH/sources/PIH/concepts/21831/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21831/,Q-AND-A
+Concept,PIH,PIH,,21832,, Maluti Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21832/,/orgs/PIH/sources/PIH/concepts/21832/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21832/,Q-AND-A
+Concept,PIH,PIH,,21833,, Mokhotlong Hospital ,FULLY_SPECIFIED,,Misc,None,/orgs/PIH/sources/PIH/concepts/21833/,/orgs/PIH/sources/PIH/concepts/21833/,SAME-AS,/orgs/PIH/sources/PIH/concepts/21809/,/orgs/PIH/sources/PIH/concepts/21833/,Q-AND-A
